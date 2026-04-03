@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.env
+*.pfx
+*.pem
+*.key
+*.crt
+appsettings.Development.json
+secrets.json
