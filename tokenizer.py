@@ -37,6 +37,10 @@ class Tokenizer:
             text += self.reverse_vocab[id]
         return text
 
+    def tokenize(self, text):
+        token_ids = self.encode(text)
+        return [self.reverse_vocab[id] for id in token_ids]
+
 
 
 

@@ -99,7 +99,7 @@ def plot_dots(sentences_data, title, dims=[0, 1, 2]):
             z = sentences_data["words"][:, dims[2]],
             mode = "markers+text",
             marker=dict(
-                size = 10,
+                size = 6,
                 color = sentences_data["color"]
             ),
             text = sentences_data["labels"],
@@ -161,6 +161,8 @@ sentences = [
     }
 ]
 
+sentence = "the capital of united states and the capital of france"
+
 #plot_dots(sentences, "Sözlük V1")
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, Gemma3ForCausalLM
@@ -169,9 +171,9 @@ gemma_tokenizer = AutoTokenizer.from_pretrained("google/gemma-3-1b-it")
 gemma_model = AutoModelForCausalLM.from_pretrained("google/gemma-3-1b-it")
 #model2 = Gemma3ForCausalLM.from_pretrained("google/gemma-3-1b-it")
 
-gemma_tokens = gemma_tokenizer.encode("the capital of united states")
-#print(gemma_tokens)
-#print(gemma_model)
+gemma_tokens = gemma_tokenizer.encode("the capital of united states the capital of france") #burada görselleştirdiğimizde capital, the ve of kelimeleri bizim
+print(gemma_tokens)                                                                         #sözlüğümüzden farklı olarak 2 tane gözükür ve tam olarak aynı nokta
+#print(gemma_model)                                                                         #üzerinde değildir çünkü gemma 
 
 print(gemma_model.model.embed_tokens(torch.tensor(gemma_tokens)))
 
@@ -183,7 +185,7 @@ print(gemma_tokenizer.tokenize("the capital of united states"))
 gemma_sentences = [
     {
         "words": gemma_meanings.detach().float().numpy(),
-        "labels": gemma_tokenizer.tokenize("the capital of united states"),
+        "labels": tokenizer.tokenize("the capital of united states and the capital of france"),
         "color": "red"
     }
 ]
