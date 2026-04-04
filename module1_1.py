@@ -91,12 +91,12 @@ dict_v2 = {
 import plotly.graph_objects as go
 import plotly.offline
 
-def plot_dots(sentences_data, title):
+def plot_dots(sentences_data, title, dims=[0, 1, 2]):
     data = [
         go.Scatter3d(
-            x = sentences_data["words"][:, 0],
-            y = sentences_data["words"][:, 1],
-            z = sentences_data["words"][:, 2],
+            x = sentences_data["words"][:, dims[0]],
+            y = sentences_data["words"][:, dims[1]],
+            z = sentences_data["words"][:, dims[2]],
             mode = "markers+text",
             marker=dict(
                 size = 10,
@@ -171,18 +171,23 @@ gemma_model = AutoModelForCausalLM.from_pretrained("google/gemma-3-1b-it")
 
 gemma_tokens = gemma_tokenizer.encode("the capital of united states")
 #print(gemma_tokens)
+#print(gemma_model)
+
+print(gemma_model.model.embed_tokens(torch.tensor(gemma_tokens)))
 
 gemma_meanings = gemma_model.model.embed_tokens(torch.tensor(gemma_tokens))
-#print(gemma_meanings.shape)
+print(gemma_meanings.shape)
+
+print(gemma_tokenizer.tokenize("the capital of united states"))
 
 gemma_sentences = [
     {
-        "words": gemma_meanings.detach().numpy(),
-        "labels": ["the", " ", "capital", " ", "of", " ", "united", " ", "states"],
-        "color": "blue"
+        "words": gemma_meanings.detach().float().numpy(),
+        "labels": gemma_tokenizer.tokenize("the capital of united states"),
+        "color": "red"
     }
 ]
-plot_dots(gemma_sentences, "Gemma V1")
+plot_dots(gemma_sentences, "Gemma V1", dims=[20, 21, 22])
 
 
 """
@@ -213,6 +218,3 @@ layout = go.Layout(
 fig = go.Figure(data=data, layout = layout)
 plotly.offline.iplot(fig)
 """
-
-
-
