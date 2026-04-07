@@ -1,0 +1,110 @@
+
+from tokenizer import Tokenizer
+tokenizer = Tokenizer("tokenizer.json")
+
+
+stride = 1
+context_length = 32
+
+
+
+
+import plotly.graph_objects as go
+import plotly.offline
+
+def plot_dots(sentences_data, title, dims=[0, 1, 2]):
+    data = [
+        go.Scatter3d(
+            x = sentences_data["words"][:, dims[0]],
+            y = sentences_data["words"][:, dims[1]],
+            z = sentences_data["words"][:, dims[2]],
+            mode = "markers+text",
+            marker=dict(
+                size = 6,
+                color = sentences_data["color"]
+            ),
+            text = sentences_data["labels"],
+            hoverinfo="text"
+        )for sentences_data in sentences_data
+    ]
+    layout = go.Layout(
+    scene = dict(
+        xaxis_title="Sertlik",
+        yaxis_title="Parlaklık",
+        zaxis_title="Kırmızılık"
+    ),
+    title = "title")
+
+    fig = go.Figure(data = data, layout = layout)
+    plotly.offline.iplot(fig)
+
+import numpy as np
+
+
+sentences = [
+    {
+        "words": np.array([
+            [0.1, 0.20, 0.23, 0.0],
+            [0.4, 0.2, 0.04, 0.3],
+            [0.12, 0.24, 0.02, 0.01],
+            [0.0, 0.0, 0.3, 0.01],
+            [0.0, 0.0, 0.0, 0.0],
+        ]),
+        "labels": ["the", "capital", "of", "united", "states"],
+        "color": "red"
+    }
+]
+
+
+#plot_dots(sentences, "Sözlük V1")
+
+import torch
+
+embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
+
+
+from tokenizer import Tokenizer
+tokenizer = Tokenizer("tokenizer.json")
+
+
+embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
+torch.manual_seed(1)
+sentence = "the capital of united states and the capital of france"
+tokens = tokenizer.encode(sentence)
+tokens = torch.tensor(tokens)
+meanings = embeddings(torch.tensor(tokens))
+
+
+sentences = [
+    {
+        "words": meanings.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "red"
+    }
+]
+#plot_dots(sentences, "Vocab V1")
+
+
+
+#sentence context space
+
+sentence1 = "the dog chased the cat"
+sentence2 = "the cat chased the dog"  # sözlük anlamları aynıdır ancak cümle içindeki anlamları farklıdır anlam uzayında farklı konumlanması gerekir
+
+torch.manual_seed(1)
+
+pos_embeddings = torch.nn.Embedding(num_embeddings=context_length, embedding_dim=4)
+
+pos_meanings = pos_embeddings(torch.tensor([i for i in range(tokens.shape[0])]))
+
+
+meanings_in_context = meanings + pos_meanings
+
+sentences = [
+    {
+        "words": meanings_in_context.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "red"
+    }
+]
+plot_dots(sentences, "Vocab V1")

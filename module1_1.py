@@ -147,7 +147,7 @@ tokenizer = Tokenizer("tokenizer.json")
 
 ids = tokenizer.encode(text)
 
-tokens = tokenizer.encode("the capital of united states")
+tokens = tokenizer.encode("the capital of united states and the capital of france")
 #print(tokens)
 
 meanings =embeddings(torch.tensor(tokens))
@@ -156,12 +156,10 @@ meanings =embeddings(torch.tensor(tokens))
 sentences = [
     {
         "words": meanings.detach().numpy(),
-        "labels": ["the", " ", "capital", " ", "of", " ", "united", " ", "states"],
+        "labels": ["the", " ", "capital", " ", "of", " ", "united", " ", "states", " ", "the", " ", "capital", " ", "of", " ", "france"],
         "color": "red"
     }
 ]
-
-sentence = "the capital of united states and the capital of france"
 
 #plot_dots(sentences, "Sözlük V1")
 
@@ -172,24 +170,32 @@ gemma_model = AutoModelForCausalLM.from_pretrained("google/gemma-3-1b-it")
 #model2 = Gemma3ForCausalLM.from_pretrained("google/gemma-3-1b-it")
 
 gemma_tokens = gemma_tokenizer.encode("the capital of united states the capital of france") #burada görselleştirdiğimizde capital, the ve of kelimeleri bizim
-print(gemma_tokens)                                                                         #sözlüğümüzden farklı olarak 2 tane gözükür ve tam olarak aynı nokta
+#print(gemma_tokens)                                                                         #sözlüğümüzden farklı olarak 2 tane gözükür ve tam olarak aynı nokta
 #print(gemma_model)                                                                         #üzerinde değildir çünkü gemma 
 
-print(gemma_model.model.embed_tokens(torch.tensor(gemma_tokens)))
+#print(gemma_model.model.embed_tokens(torch.tensor(gemma_tokens)))
 
 gemma_meanings = gemma_model.model.embed_tokens(torch.tensor(gemma_tokens))
-print(gemma_meanings.shape)
+#print(gemma_meanings.shape)
 
-print(gemma_tokenizer.tokenize("the capital of united states"))
+#print(gemma_tokenizer.tokenize("the capital of united states"))
+
+
+embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
+sentence = "the capital of united states and the capital of france"
+tokens = tokenizer.encode(sentence)
+meanings = embeddings(torch.tensor(tokens))
+
+#print(gemma_tokenizer.tokenize(sentence))
 
 gemma_sentences = [
     {
-        "words": gemma_meanings.detach().float().numpy(),
-        "labels": tokenizer.tokenize("the capital of united states and the capital of france"),
+        "words": meanings.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
         "color": "red"
     }
 ]
-plot_dots(gemma_sentences, "Gemma V1", dims=[20, 21, 22])
+plot_dots(gemma_sentences, "Gemma V1")
 
 
 """
