@@ -60,7 +60,7 @@ sentences = [
 
 import torch
 
-embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
+embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)#sözlüğümüz: sözlükteki kelime sayısı ve anlam boyutu parametleri ile birlikte
 
 
 from tokenizer import Tokenizer
@@ -93,13 +93,13 @@ sentence2 = "the cat chased the dog"  # sözlük anlamları aynıdır ancak cüm
 
 torch.manual_seed(1)
 
-pos_embeddings = torch.nn.Embedding(num_embeddings=context_length, embedding_dim=4)
+pos_embeddings = torch.nn.Embedding(num_embeddings=context_length, embedding_dim=4)#cümle uzunluğu ve cümledeki her kelimenin anlam boyutu
 
 pos_meanings = pos_embeddings(torch.tensor([i for i in range(tokens.shape[0])]))
 
 
 meanings_in_context = meanings + pos_meanings
-
+"""
 sentences = [
     {
         "words": meanings_in_context.detach().numpy(),
@@ -108,3 +108,27 @@ sentences = [
     }
 ]
 plot_dots(sentences, "Vocab V1")
+"""
+
+import math
+def get_position_encodding(context_length, embedding_dimension, base = 10000, device = "cpu"):
+    p_embeddings = torch.zeros(context_length, embedding_dimension, device = device)
+    for pos in range(context_length):
+        for i in range(embedding_dimension // 2):
+            p_embeddings[pos, 2 * i] = math.sin(pos / (base ** (2 * i / embedding_dimension)))
+            if(i + 1 < embedding_dimension):
+                p_embeddings[pos, 2 * i + 1] = math.cos(pos / (base ** ((2 * i + 1) / embedding_dimension)))
+    
+    return p_embeddings.unsqueeze(0)
+
+
+pos_embeddings = get_position_encodding(context_length, 4)
+print(pos_embeddings)
+print(pos_embeddings.shape)
+
+
+"""
+p_embeddings = torch.zeros(context_length, 4)
+print(p_embeddings)"""
+
+

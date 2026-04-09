@@ -161,7 +161,25 @@ sentences = [
     }
 ]
 
-#plot_dots(sentences, "Sözlük V1")
+plot_dots(sentences, "Sözlük V1")
+
+
+
+embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
+sentence = "the capital of united states and the capital of france"
+tokens = tokenizer.encode(sentence)
+meanings = embeddings(torch.tensor(tokens))
+
+#print(gemma_tokenizer.tokenize(sentence))
+
+gemma_sentences = [
+    {
+        "words": meanings.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "red"
+    }
+]
+#plot_dots(gemma_sentences, "Gemma V1")
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, Gemma3ForCausalLM
 
@@ -180,22 +198,16 @@ gemma_meanings = gemma_model.model.embed_tokens(torch.tensor(gemma_tokens))
 
 #print(gemma_tokenizer.tokenize("the capital of united states"))
 
-
-embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
-sentence = "the capital of united states and the capital of france"
-tokens = tokenizer.encode(sentence)
-meanings = embeddings(torch.tensor(tokens))
-
-#print(gemma_tokenizer.tokenize(sentence))
+print(gemma_tokenizer.tokenize(sentence))
 
 gemma_sentences = [
     {
-        "words": meanings.detach().numpy(),
-        "labels": tokenizer.tokenize(sentence),
+        "words": gemma_meanings.detach().float().numpy(),
+        "labels": gemma_tokenizer.tokenize(sentence),
         "color": "red"
     }
 ]
-plot_dots(gemma_sentences, "Gemma V1")
+#plot_dots(gemma_sentences, "Gemma V1", dims=[20, 21, 22])
 
 
 """

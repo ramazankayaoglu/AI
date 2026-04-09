@@ -88,4 +88,4 @@ from tokenizer import Tokenizer
 
 tokenizer = Tokenizer("tokenizer.json")
 print(tokenizer.encode("states"))
-pring(tokenizer.decode([4,58]))
+print(tokenizer.decode([4,58]))
