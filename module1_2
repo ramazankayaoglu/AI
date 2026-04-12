@@ -39,7 +39,7 @@ def plot_dots(sentences_data, title, dims=[0, 1, 2]):
     plotly.offline.iplot(fig)
 
 import numpy as np
-
+"""
 
 sentences = [
     {
@@ -54,7 +54,7 @@ sentences = [
         "color": "red"
     }
 ]
-
+"""
 
 #plot_dots(sentences, "Sözlük V1")
 
@@ -74,7 +74,7 @@ tokens = tokenizer.encode(sentence)
 tokens = torch.tensor(tokens)
 meanings = embeddings(torch.tensor(tokens))
 
-
+"""
 sentences = [
     {
         "words": meanings.detach().numpy(),
@@ -83,7 +83,7 @@ sentences = [
     }
 ]
 #plot_dots(sentences, "Vocab V1")
-
+"""
 
 
 #sentence context space
@@ -116,19 +116,58 @@ def get_position_encodding(context_length, embedding_dimension, base = 10000, de
     for pos in range(context_length):
         for i in range(embedding_dimension // 2):
             p_embeddings[pos, 2 * i] = math.sin(pos / (base ** (2 * i / embedding_dimension)))
-            if(i + 1 < embedding_dimension):
-                p_embeddings[pos, 2 * i + 1] = math.cos(pos / (base ** ((2 * i + 1) / embedding_dimension)))
+            if i + 1 < embedding_dimension :
+                p_embeddings[pos, 2 * i + 1] = math.cos(pos / (base ** (2 * i + 1 / embedding_dimension)))
     
     return p_embeddings.unsqueeze(0)
 
 
-pos_embeddings = get_position_encodding(context_length, 4)
-print(pos_embeddings)
-print(pos_embeddings.shape)
+pos_embeddings = get_position_encodding(20, 4)
+"""print(pos_embeddings)
+print(pos_embeddings.shape)"""
 
 
 """
 p_embeddings = torch.zeros(context_length, 4)
 print(p_embeddings)"""
 
- 
+meanings_in_sentence = meanings + pos_meanings
+print(meanings_in_sentence)
+
+"""
+sentences = [
+    {
+        "words": meanings.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "red"
+    }
+]
+
+plot_dots(sentences, "Sentence Context Space V1")
+"""
+"""
+sentences = [
+    {
+        "words": meanings_in_sentence.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "red"
+    }
+]
+
+plot_dots(sentences, "Sentence Context Space V2")"""
+
+
+sentences = [
+    {
+        "words": meanings.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "red"
+    },
+     {
+        "words": meanings_in_sentence.detach().numpy(),
+        "labels": tokenizer.tokenize(sentence),
+        "color": "blue"
+    }
+]
+
+plot_dots(sentences, "Sentence Context Space V2")
