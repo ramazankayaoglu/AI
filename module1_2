@@ -1,6 +1,7 @@
 
-from tokenizer import Tokenizer
-tokenizer = Tokenizer("tokenizer.json")
+import token
+from master_tokenizer import MasterTokenizer
+tokenizer = MasterTokenizer("tokenizer.json")
 
 
 stride = 1
@@ -63,8 +64,8 @@ import torch
 embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)#sözlüğümüz: sözlükteki kelime sayısı ve anlam boyutu parametleri ile birlikte
 
 
-from tokenizer import Tokenizer
-tokenizer = Tokenizer("tokenizer.json")
+from master_tokenizer import MasterTokenizer
+tokenizer = MasterTokenizer("tokenizer.json")
 
 
 embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
@@ -228,6 +229,27 @@ meanings_with_pos_encodings_sentences = [
 
 #plot_dots(meanings_with_pos_encodings_sentences, "Sentence Context Space V3 Rotary Encoding")
 
-print(meanings_with_pos_encodings)
+"""print(meanings_with_pos_encodings)
 print("sa")
-print(meanings)
+print(meanings)"""
+
+
+
+""" Model olarak şimdiye kadar yaptıklarımızı kullanabiliriz"""
+
+from master_model import MasterModel
+from master_tokenizer import MasterTokenizer
+
+u_tokenizer = MasterTokenizer("tokenizer.json")
+prompt = "the capital of united states and the capital of france"
+
+tokens = u_tokenizer.encode(prompt)
+tokens = torch.tensor(tokens)
+
+model = MasterModel(vocab_size = len(u_tokenizer.vocab), embedding_dim=4, context_length=32)
+
+model(tokens)
+print(model(tokens))
+print(model)
+
+

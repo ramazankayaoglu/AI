@@ -1,6 +1,6 @@
 import json
 
-class Tokenizer:
+class MasterTokenizer:
     def __init__(self, vocab_file):
         with open(vocab_file, "r") as f:
             self.vocab = json.load(f)
