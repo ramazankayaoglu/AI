@@ -142,8 +142,8 @@ import torch
 embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
 
 
-from tokenizer import Tokenizer
-tokenizer = Tokenizer("tokenizer.json")
+from master_tokenizer import MasterTokenizer
+tokenizer = MasterTokenizer("tokenizer.json")
 
 ids = tokenizer.encode(text)
 

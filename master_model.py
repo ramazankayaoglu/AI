@@ -43,4 +43,4 @@ class MasterModel(nn.Module):
     def forward(self, x):
         x = self.embedding(x) #dictionary meanings of the tokens(words)
         x = self.get_pos(x)   #meaning of the tokens in the sentence according to their position
-
+        return x

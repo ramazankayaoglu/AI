@@ -70,10 +70,10 @@ tokenizer = MasterTokenizer("tokenizer.json")
 
 embeddings = torch.nn.Embedding(num_embeddings=64, embedding_dim=4)
 torch.manual_seed(1)
+
 sentence = "the capital of united states and the capital of france"
-tokens = tokenizer.encode(sentence)
-tokens = torch.tensor(tokens)
-meanings = embeddings(torch.tensor(tokens))
+tokens = tokenizer.encode(sentence).long()
+meanings = embeddings(tokens)
 
 """
 sentences = [
@@ -216,12 +216,12 @@ meanings_with_pos_encodings = get_rotary_position_encoding(meanings)
 meanings_with_pos_encodings_sentences = [
     {
         "words": meanings_with_pos_encodings.detach().numpy(),
-        "labels": tokenizer.tokenize(sentence),
+        "labels": tokens.clone().detach(),
         "color": "red"
     },
      {
         "words": meanings.detach().numpy(),
-        "labels": tokenizer.tokenize(sentence),
+        "labels": sentence,
         "color": "blue"
     }
 ]
@@ -231,7 +231,7 @@ meanings_with_pos_encodings_sentences = [
 
 """print(meanings_with_pos_encodings)
 print("sa")
-print(meanings)"""
+print(meanings)"""  
 
 
 
@@ -239,14 +239,20 @@ print(meanings)"""
 
 from master_model import MasterModel
 from master_tokenizer import MasterTokenizer
+import torch
 
 u_tokenizer = MasterTokenizer("tokenizer.json")
+
 prompt = "the capital of united states and the capital of france"
 
-tokens = u_tokenizer.encode(prompt)
-tokens = torch.tensor(tokens)
+tokens = u_tokenizer.encode(prompt).long()
 
-model = MasterModel(vocab_size = len(u_tokenizer.vocab), embedding_dim=4, context_length=32)
+torch.manual_seed(1)
+model = MasterModel(
+    vocab_size=len(u_tokenizer.vocab),
+    embedding_dim=4,
+    context_length=32
+)
 
 model(tokens)
 print(model(tokens))

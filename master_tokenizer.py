@@ -1,4 +1,5 @@
 import json
+import torch
 
 class MasterTokenizer:
     def __init__(self, vocab_file):
@@ -28,7 +29,7 @@ class MasterTokenizer:
                     i += 1
             tokens.append(self.vocab[" "])
         tokens.pop()
-        return tokens
+        return torch.tensor(tokens)
 
 
     def decode(self, ids):
@@ -39,6 +40,8 @@ class MasterTokenizer:
 
     def tokenize(self, text):
         token_ids = self.encode(text)
+        #token_ids from tensor to list
+        token_ids = token_ids.detach().numpy().tolist()
         return [self.reverse_vocab[id] for id in token_ids]
 
 
