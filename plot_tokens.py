@@ -18,9 +18,9 @@ def plot_tokens(sentences_data, title, dims=[0, 1, 2]):
     ]
     layout = go.Layout(
     scene = dict(
-        xaxis_title="Sertlik",
-        yaxis_title="Parlaklık",
-        zaxis_title="Kırmızılık"
+        xaxis_title="Hardness",
+        yaxis_title="Brightness",
+        zaxis_title="Redness"
     ),
     title = "title")
 

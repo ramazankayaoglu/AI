@@ -41,4 +41,19 @@ master_sentences = [
 
 #print(u_tokenizer.tokenize(prompt))
 
-plot_tokens(master_sentences, "Models Context Space")
+#plot_tokens(master_sentences, "Models Context Space")
+
+print(sentence_meanings)
+
+
+the_position = [-1.5256, -0.7502,  0.6540,  1.6095]
+capital_position = [ 0.9326, -0.2774, -0.4988,  1.4560]
+
+hardness_distance = abs(the_position[0] - capital_position[0])
+brightness_distance = abs(the_position[1] - capital_position[1])
+redness_distance = abs(the_position[2] - capital_position[2])
+blueness_distance = abs(the_position[3] - capital_position[3])
+
+print(hardness_distance, brightness_distance, redness_distance, blueness_distance)
+
+total_distance = hardness_distance + brightness_distance + redness_distance + blueness_distance #manhattan distance olarak geçer
