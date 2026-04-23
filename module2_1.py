@@ -76,9 +76,58 @@ def is_apple(position, real_position):
     return dist1 > 0 and dist1 < 0.5
 
 
-for i in range(1,5):
+"""for i in range(1,5):
     print(is_apple(apple, real_apple))
     if(is_apple(apple, real_apple) == True):
         print(is_apple(apple, real_apple))
     else:
-        is_apple(apple, real_apple)
+        is_apple(apple, real_apple)"""
+
+
+cos_sim_hardness = the_position[0] * capital_position[0]
+cos_sim_brightness = the_position[1] * capital_position[1]
+cos_sim_redness = the_position[2] * capital_position[2]
+cos_sim_blueness = the_position[3] * capital_position[3]
+
+total_cos_sim = cos_sim_blueness + cos_sim_brightness + cos_sim_hardness + cos_sim_redness
+
+#print(total_cos_sim)
+#print(sentence_meanings[0], sentence_meanings[1], sentence_meanings[2], sentence_meanings[3])
+
+c_0_0 = sentence_meanings[0][0] *  sentence_meanings[0][0] + sentence_meanings[0][1] * sentence_meanings[0][1] + sentence_meanings[0][2] * sentence_meanings[0][2] + sentence_meanings[0][3] * sentence_meanings[0][3]
+c_0_1 = sentence_meanings[0][0] *  sentence_meanings[1][0] + sentence_meanings[0][1] * sentence_meanings[1][1] + sentence_meanings[0][2] * sentence_meanings[1][2] + sentence_meanings[0][3] * sentence_meanings[1][3]
+c_0_2 = sentence_meanings[0][0] *  sentence_meanings[2][0] + sentence_meanings[0][1] * sentence_meanings[2][1] + sentence_meanings[0][2] * sentence_meanings[2][2] + sentence_meanings[0][3] * sentence_meanings[2][3]
+c_0_3 = sentence_meanings[0][0] *  sentence_meanings[3][0] + sentence_meanings[0][1] * sentence_meanings[3][1] + sentence_meanings[0][2] * sentence_meanings[3][2] + sentence_meanings[0][3] * sentence_meanings[3][3]
+
+#print(c_0_0, c_0_1, c_0_2, c_0_3)
+"""
+the_similarities = []
+
+for i in range(len(sentence_meanings)): 
+    cs_the_i = sentence_meanings[0][0] *  sentence_meanings[i][0] + sentence_meanings[0][1] * sentence_meanings[i][1] + sentence_meanings[0][2] * sentence_meanings[i][2] + sentence_meanings[0][3] * sentence_meanings[i][3]
+    the_similarities.append(cs_the_i)
+
+print(the_similarities)"""    
+
+
+#aşağıdaki kod ile cosinus benzerliğinden kelimelerin yani Token'ların diğer Token'lara benzerliğini ölçmeye "Attention ağırlığı" denir
+all_similarities = torch.zeros(sentence_meanings.shape[0], sentence_meanings.shape[0])
+for i in range(sentence_meanings.shape[0]):
+    i_similarities = torch.zeros(sentence_meanings.shape[0])
+
+    for j in range(sentence_meanings.shape[0]):
+        for k in range(sentence_meanings.shape[1]):
+            cs_i_j = sentence_meanings[i][k] * sentence_meanings[j][k]
+            i_similarities[j] = cs_i_j
+
+    all_similarities[i] = i_similarities
+
+#print(all_similarities.detach().numpy())
+
+
+all_similarities_torch = sentence_meanings @ sentence_meanings.T  #sentence_meanings [4,20] boyutlarında bir matris bu matrisin Transpoz'u alınıp 
+#print(sentence_meanings)                                          #[20,4] boyutlarındaki hali çarpıldığında istenilen tüm boyutların birbiri ile çarpılması
+#print(sentence_meanings.T)                                        #yapılmış olur. Torch bunu aynı zamanda CPU'da multithread yaparak performans sağlar
+
+
+print(sentence_meanings @ sentence_meanings.T)
