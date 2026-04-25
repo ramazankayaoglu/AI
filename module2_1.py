@@ -124,10 +124,43 @@ for i in range(sentence_meanings.shape[0]):
 
 #print(all_similarities.detach().numpy())
 
-
+#Query, Key, Value
 all_similarities_torch = sentence_meanings @ sentence_meanings.T  #sentence_meanings [4,20] boyutlarında bir matris bu matrisin Transpoz'u alınıp 
 #print(sentence_meanings)                                          #[20,4] boyutlarındaki hali çarpıldığında istenilen tüm boyutların birbiri ile çarpılması
 #print(sentence_meanings.T)                                        #yapılmış olur. Torch bunu aynı zamanda CPU'da multithread yaparak performans sağlar
 
 
-print(sentence_meanings @ sentence_meanings.T)
+#print(sentence_meanings @ sentence_meanings.T)
+
+attention_weights = torch.softmax(all_similarities, dim = 1)
+#print(attention_weights)
+
+#print(torch.sum(all_similarities_torch[0]))
+#print(torch.sum(attention_weights[0]))
+
+
+sentence_context_vector = attention_weights @ sentence_meanings #sentence_meanings burada value oluyor 
+#print(sentence_context_vector)
+#print(sentence_meanings)
+
+sentence_meanings_without_pos = master_model.embedding(tokens)
+
+master_sentences = [
+    {
+    "words" : sentence_meanings_without_pos.detach().numpy(), #sözlükteki yeri
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "blue"
+    },
+    {
+    "words" : sentence_meanings.detach().numpy(), #sıra bilgisi de eklendi
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "purple"
+    },    
+    {
+    "words" : sentence_context_vector.detach().numpy(), #token bu cümlenin içinde ne kadar önemli ve anlam da eklendi 
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "orange"
+    }
+]
+
+plot_tokens(master_sentences, "Models Attention Sentence Space")
