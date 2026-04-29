@@ -1,7 +1,7 @@
 from turtle import forward
 import torch
 import torch.nn as nn
-
+from master_self_attention import MasterSelfAttention
 
 def get_rotary_position_encoding(input: torch.Tensor, base = 10000, device = "cpu"):
     context_length, dimension = input.shape
@@ -39,8 +39,10 @@ class MasterModel(nn.Module):
         #it is just educational purposes
         self.pos_embedding = nn.Embedding(context_length, embedding_dim)
         self.get_pos = get_rotary_position_encoding
+        self.self_attention = MasterSelfAttention(embedding_dim, embedding_dim)
 
     def forward(self, x):
         x = self.embedding(x) #dictionary meanings of the tokens(words)
         x = self.get_pos(x)   #meaning of the tokens in the sentence according to their position
+        x = self.self_attention(x)
         return x

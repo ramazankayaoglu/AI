@@ -1,0 +1,68 @@
+from master_model import MasterModel
+from master_tokenizer import MasterTokenizer
+import torch
+
+master_tokenizer = MasterTokenizer("tokenizer.json")
+
+
+prompt = "the capital of united states and the capital of france"
+tokens = master_tokenizer.encode(prompt).long()
+master_model = MasterModel(
+    vocab_size=len(master_tokenizer.vocab),
+    embedding_dim=4,
+    context_length=32
+)
+sentence_meanings_with_attention_context = master_model(tokens)
+print(sentence_meanings_with_attention_context)
+
+q_weights = torch.nn.Linear(4,3, bias = False)
+k_weights = torch.nn.Linear(4,3, bias = False)
+v_weights = torch.nn.Linear(4,3, bias = False)
+
+
+q_of_sentence = q_weights(sentence_meanings_with_attention_context)
+k_of_sentence = k_weights(sentence_meanings_with_attention_context)
+v_of_sentence = v_weights(sentence_meanings_with_attention_context)
+
+
+attention_scores = q_of_sentence @ k_of_sentence.T
+attention_weights = torch.softmax(attention_scores / k_of_sentence.shape[-1] ** 0.5, dim = 1)
+
+context_vector = attention_weights @ v_of_sentence
+
+print(context_vector)
+
+
+from plot_tokens import plot_tokens
+
+q_k_v_sentences = [
+    {
+    "words" : q_of_sentence.detach().numpy(), #sözlükteki yeri
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "blue"
+    },
+    {
+    "words" : k_of_sentence.detach().numpy(), #sıra bilgisi de eklendi
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "purple"
+    },    
+    {
+    "words" : v_of_sentence.detach().numpy(), #token bu cümlenin içinde ne kadar önemli ve anlam da eklendi 
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "orange"
+    },
+      {
+    "words" : context_vector.detach().numpy(), #token bu cümlenin içinde ne kadar önemli ve anlam da eklendi 
+    "labels": master_tokenizer.tokenize(prompt),
+    "color": "green"
+    }
+]
+
+#plot_tokens(q_k_v_sentences, "Query Key Value Sentence Space")
+
+
+
+
+#print(q_weights.weight) 
+#print(q_weights(sentence_meanings))
+
