@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-from module2_2 import attention_weights
 
 class MasterSelfAttention(nn.Module):
     def __init__(self, embedding_dim, output_dim):

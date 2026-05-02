@@ -5,7 +5,7 @@ import torch
 master_tokenizer = MasterTokenizer("tokenizer.json")
 
 
-prompt = "the capital of united states and the capital of france"
+prompt = "the capital of united"
 tokens = master_tokenizer.encode(prompt).long()
 master_model = MasterModel(
     vocab_size=len(master_tokenizer.vocab),
@@ -13,7 +13,7 @@ master_model = MasterModel(
     context_length=32
 )
 sentence_meanings_with_attention_context = master_model(tokens)
-print(sentence_meanings_with_attention_context)
+#print(sentence_meanings_with_attention_context)
 
 q_weights = torch.nn.Linear(4,3, bias = False)
 k_weights = torch.nn.Linear(4,3, bias = False)
@@ -28,9 +28,24 @@ v_of_sentence = v_weights(sentence_meanings_with_attention_context)
 attention_scores = q_of_sentence @ k_of_sentence.T
 attention_weights = torch.softmax(attention_scores / k_of_sentence.shape[-1] ** 0.5, dim = 1)
 
+mask = torch.tril(torch.ones(attention_weights.shape[0], attention_weights.shape[0]))
+#print(mask)
+#print(attention_weights * mask)
+
+masked_attention_weights = attention_weights.masked_fill(mask == 0, -torch.inf)
+#print(masked_attention_weights)
+softmax_masked_self_attention = torch.softmax(masked_attention_weights, dim = 1)
+
+dropout_rate = 0.5
+torch.manual_seed(1) 
+dropout = torch.nn.Dropout(dropout_rate)
+
+print(dropout(softmax_masked_self_attention))
+
+
 context_vector = attention_weights @ v_of_sentence
 
-print(context_vector)
+#print(context_vector)
 
 
 from plot_tokens import plot_tokens
@@ -65,4 +80,8 @@ q_k_v_sentences = [
 
 #print(q_weights.weight) 
 #print(q_weights(sentence_meanings))
+
+
+
+#Causal Self Attention (Nedensel Self Attention)
 
