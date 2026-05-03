@@ -1,7 +1,7 @@
 from turtle import forward
 import torch
 import torch.nn as nn
-from master_causal_attention import MasterCausalAttention
+from master_multi_head_attention import MasterMultiHeadAttention 
 
 def get_rotary_position_encoding(input: torch.Tensor, base = 10000, device = "cpu"):
     context_length, dimension = input.shape
@@ -39,7 +39,7 @@ class MasterModel(nn.Module):
         #it is just educational purposes
         self.pos_embedding = nn.Embedding(context_length, embedding_dim)
         self.get_pos = get_rotary_position_encoding
-        self.self_attention = MasterCausalAttention(embedding_dim, embedding_dim, dropout_rate = 0.5)
+        self.self_attention = MasterMultiHeadAttention(embedding_dim, embedding_dim, context_length, num_heads=2,  dropout_rate = 0.5)
 
     def forward(self, x):
         x = self.embedding(x) #dictionary meanings of the tokens(words)

@@ -1,3 +1,4 @@
+from master_causal_attention import MasterCausalAttention
 from master_model import MasterModel
 from master_tokenizer import MasterTokenizer
 import torch
@@ -40,7 +41,7 @@ dropout_rate = 0.5
 torch.manual_seed(1) 
 dropout = torch.nn.Dropout(dropout_rate)
 
-print(dropout(softmax_masked_self_attention))
+#print(dropout(softmax_masked_self_attention))
 
 
 context_vector = attention_weights @ v_of_sentence
@@ -85,3 +86,29 @@ q_k_v_sentences = [
 
 #Causal Self Attention (Nedensel Self Attention)
 
+
+
+#Multi-Head Attention
+import torch
+import torch.nn as nn
+
+class MasterMultiHeadAttention(nn.Module):
+    def __init__(self, embedding_dim, output_dim, context_length, num_heads, dropout_rate = 0):
+        super().__init__()
+        
+        self.heads = nn.ModuleList([MasterCausalAttention(embedding_dim, output_dim, context_length, dropout_rate) for _ in range(num_heads)])
+
+    def forward(self, x):
+      attention_outputs = []
+      for head in self.heads:
+        head_output = head(x)
+        attention_outputs.append(head_output)
+
+      return torch.cat(attention_outputs, dim = 1)
+
+
+multi_head_attention = MasterMultiHeadAttention(embedding_dim=4, output_dim=4, context_length=32, num_heads=2, dropout_rate=0)
+
+out = multi_head_attention(torch.randn(4,4))
+
+print(out.shape, out)
