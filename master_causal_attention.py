@@ -23,7 +23,7 @@ class MasterCausalAttention(nn.Module):
         v = self.v_weights(x)
 
         attention_scores = q @ k.T
-        attention_scores = attention_scores.masked_fill(self.mask.bool()[:number_of_tokens, :number_of_tokens] == 0, -torch.inf)
+        attention_scores = attention_scores.masked_fill_(self.mask.bool()[:number_of_tokens, :number_of_tokens] == 0, -torch.inf)
         attention_scores = torch.softmax(attention_scores / k.shape[-1] ** 0.5, dim = 1)
         attention_scores = self.dropout(attention_scores)
 
