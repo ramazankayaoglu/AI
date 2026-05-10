@@ -9,6 +9,8 @@ class MasterMultiHeadAttention(nn.Module):
         
         self.heads = nn.ModuleList([MasterCausalAttention(embedding_dim, output_dim, context_length, dropout_rate) for _ in range(num_heads)])
 
+        self.projection = nn.Linear(embedding_dim, output_dim)
+
     def forward(self, x):
       attention_outputs = []
       for head in self.heads:
