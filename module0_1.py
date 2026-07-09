@@ -83,9 +83,31 @@ import json
 #with open("tokenizer_gemma.json","w", encoding="utf-8") as f:
  #   json.dump(processor.tokenizer.get_vocab(), f, ensure_ascii= False) 
 
-
+"""
 from tokenizer import Tokenizer
 
 tokenizer = Tokenizer("tokenizer.json")
 print(tokenizer.encode("states"))
 print(tokenizer.decode([4,58]))
+"""
+
+
+from tokenizers import Tokenizer
+from tokenizers.models import BPE
+from tokenizers.trainers import BpeTrainer
+from tokenizers.pre_tokenizers import Whitespace
+
+tokenizer = Tokenizer(BPE(unk_token="<UNK>"))
+tokenizer.pre_tokenizer = Whitespace()
+
+trainer = BpeTrainer(
+    vocab_size=30000,
+    special_tokens=["<PAD>", "<UNK>", "<BOS>", "<EOS>"]
+)
+
+tokenizer.train(["text.txt"], trainer)
+tokenizer.save("mytokenizer.json")
+
+encoded = tokenizer.encode("merhaba kanka nasılsın")
+print(encoded.tokens)
+print(encoded.ids)
